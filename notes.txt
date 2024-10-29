@@ -1,0 +1,95 @@
+ 
+wc -l amp_res_1.fastq
+
+1823504 amp_res_1.fastq
+
+wc -l amp_res_2.fastq
+
+1823504 amp_res_2.fastq
+
+надо это поделить на 4 чтобы понять количество ридов ( 4 количество строчек в FASTQ файлах)
+
+conda install -c bioconda seqkit
+
+
+ seqkit stats amp_res_1.fastq
+file             format  type  num_seqs     sum_len  min_len  avg_len  max_len
+amp_res_1.fastq  FASTQ   DNA    455,876  46,043,476      101      101      101
+(base) pandorica@legion:~/PycharmProjects/bioinf_practicum/project_1$ seqkit stats amp_res_2.fastq
+file             format  type  num_seqs     sum_len  min_len  avg_len  max_len
+amp_res_2.fastq  FASTQ   DNA    455,876  46,043,476      101      101      101
+
+
+apt-get install fastqc
+не получилось
+sudo apt-get install fastqc
+получилось
+
+fastqc -h
+
+fastqc -o . /home/pandorica/PycharmProjects/bioinf_practicum/project_1/amp_res_2.fastq /home/pandorica/PycharmProjects/bioinf_practicum/project_1/amp_res_2.fastq_stat
+
+
+fastqc -o . /home/pandorica/PycharmProjects/bioinf_practicum/project_1/amp_res_2.fastq /home/pandorica/PycharmProjects/bioinf_practicum/project_1/amp_res_2.fastq_stat
+красными в статистике файла amp_res_1 получила:
+Per base sequence quality
+Per tile sequence quality
+Оранжевыми получила:
+Per base sequence content
+Per sequence GC content
+
+красным в статистике файла amp_res_2 получила:
+Per base sequence quality
+оранжевым получила:
+Per tile sequence quality
+Per base sequence content
+Per sequence GC content
+
+
+conda install -c bioconda trimmomatic
+
+conda list trimmomatic
+
+Run Trimmomatic in paired end mode, with following parameters:
+Cut bases off the start of a read if quality below 20
+Cut bases off the end of a read if quality below 20
+Trim reads using a sliding window approach, with window size 10 and average quality  within the window 20.
+Drop the read if it is below length 20.
+
+ Команда для фильтрации:
+
+java -jar /home/pandorica/miniconda3/share/trimmomatic-0.39-2/trimmomatic.jar PE -phred33 \
+  amp_res_1.fastq amp_res_2.fastq \
+  amp_res_1_paired.fq amp_res_1_unpaired.fq \
+  amp_res_2_paired.fq amp_res_2_unpaired.fq \
+  LEADING:20 TRAILING:20 SLIDINGWINDOW:10:20 MINLEN:20
+
+
+Input Read Pairs: 455876 (общее количество пар ридов, поданных на вход)
+Both Surviving: 446259 (97.89%)  (риды, у которых обе части (forward и reverse) прошли фильтрацию)
+Forward Only Surviving: 9216 (2.02%) (риды, где только forward часть прошла фильтрацию)
+Reverse Only Surviving: 273 (0.06%) (риды, где только reverse часть прошла фильтрацию.)
+Dropped: 128 (0.03%) (риды, которые не прошли фильтрацию)
+
+fastqc amp_res_1_paired.fq amp_res_2_paired.fq
+fastqc -o . amp_res_1_paired.fq amp_res_2_paired.fq
+
+После фильтрации
+в файлe amp_res_1_paired получила:
+красным:
+Per tile sequence quality
+Оранжевыми получила:
+Per base sequence content
+Per sequence GC content
+sequence lenfth distribution
+
+в файле amp_res_2_paired получила оранжевым:
+Per tile sequence quality
+Per base sequence content
+Per sequence GC content
+sequence length distribution
+
+Исправилось per base sequence quality
+
+
+
